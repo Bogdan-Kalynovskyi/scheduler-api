@@ -5,7 +5,7 @@ import bodyParser from  'body-parser'
 import mongoose from 'mongoose'
 
 let port = process.env.PORT || 3000
-const mongoUrl = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/test' || process.env.MONGODB_URI;
+const mongoUrl = process.env.MONGOLAB_URI || process.env.MONGODB_URI || 'mongodb://heroku_rpqj866h:heroku_rpqj866h@ds159845.mlab.com:59845/heroku_rpqj866h';
 
 mongoose.connect( mongoUrl, { useMongoClient: true })
 mongoose.connection.on('error',(err) => console.log("Error when connecting to mongo"));
