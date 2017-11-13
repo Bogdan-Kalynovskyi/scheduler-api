@@ -8,7 +8,7 @@ let port = process.env.PORT || 3000
 const mongoUrl = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/test' || process.env.MONGODB_URI;
 
 mongoose.connect( mongoUrl )
-mongoose.connection.on('open',() => console.log("Connected successfully to mongo"));
+mongoose.connection.on('error',(err) => console.log("Error when connecting to mongo"));
 
 let app = express()
 app.server = http.createServer(app)
