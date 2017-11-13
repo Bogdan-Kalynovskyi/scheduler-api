@@ -7,7 +7,7 @@ import mongoose from 'mongoose'
 let port = process.env.PORT || 3000
 const mongoUrl = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/test' || process.env.MONGODB_URI;
 
-mongoose.connect( mongoUrl )
+mongoose.connect( mongoUrl, { useMongoClient: true })
 mongoose.connection.on('error',(err) => console.log("Error when connecting to mongo"));
 
 let app = express()
