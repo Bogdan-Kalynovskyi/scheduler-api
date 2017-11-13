@@ -9,6 +9,7 @@ const mongoUrl = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/test' ||
 
 mongoose.connect( mongoUrl, { useMongoClient: true })
 mongoose.connection.on('error',(err) => console.log("Error when connecting to mongo"));
+console.log(mongoUrl)
 
 let app = express()
 app.server = http.createServer(app)
