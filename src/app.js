@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 
 import { jwtAuth,createToken } from './jwt'
 import { authRoutes } from './routes/authRoutes'
+import { monthRoutes } from './routes/monthRoutes'
 
 const port = process.env.PORT || 3000
 const mongoUrl = process.env.MONGOLAB_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/test';
@@ -25,9 +26,9 @@ app.use(cors())
 app.get('/test',function(req,res) {
 	res.send('Api is working corrextly')
 })
-app.use('/',authRoutes)
-
-app.all('/*',[jwtAuth])
+app.use( '/', authRoutes )
+app.all( '/*', [jwtAuth] )
+app.use( '/', monthRoutes )
 
 app.get('/test-protected',(req,res) => {
   res.status(200).json({

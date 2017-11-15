@@ -9,4 +9,8 @@ const userSchema = new mongoose.Schema({
   expires:String
 })
 
+userSchema.statics.getUser = function(req, cb){
+	return this.findOne({token:req.get('x-access-token')},cb)
+}
+
 export const User = mongoose.model('User',userSchema)
