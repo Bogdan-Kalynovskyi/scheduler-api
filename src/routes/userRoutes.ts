@@ -4,18 +4,29 @@ import {HttpError} from "../config/errors";
 
 const userRoutes = express.Router()
 
+function stripAuthData(userWithAuth) {
+  return {
+    // id: userWithAuth._id,
+    email: userWithAuth.email,
+    name: userWithAuth.name,
+    photoUrl: userWithAuth.photoUrl
+  }
+}
+
 
 // Admin
-monthRoutes.get('/admin/users', (request: any, response: any) => {
-  UserModel['getAllUsers'](request).then(users => response.send(users))
+userRoutes.get('/admin/users', (request: any, response: any) => {
+  UserModel['getAllUsers'](request).then(users => response.send(users.map(stripAuthData)))
 })
 
-monthRoutes.post('/admin/users', (request: any, response: any) => {
-  UserModel['saveUser'](request)// TODO UID .then(users => response.send(users))
+userRoutes.post('/admin/users', (request: any, response: any) => {
+  UserModel['saveUserToken'](request)
+  .then(() => response.status(200).render())
 })
 
-monthRoutes.delete('/admin/users', (request: any, response: any) => {
+userRoutes.delete('/admin/users', (request: any, response: any) => {
   UserModel['deleteUser'](request)
+  .then(() => response.status(200).render())
 })
 
 

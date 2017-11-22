@@ -15,7 +15,7 @@ export function jwtAuth(req, res, next) {
   let token = req.headers['x-access-token'];
   if (token) {
     try {
-      let decoded = jwt.decode(token, 'secret')
+      let decoded = jwt.decode(token, JWT_SECRET)
       if (decoded.exp < Date.now()) res.sendStatus(498)
       else
         next()
