@@ -7,7 +7,7 @@ import {jwtAuth} from "./jwt"
 import {authRoutes} from "./routes/authRoutes"
 import {monthRoutes} from "./routes/monthRoutes"
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3333
 const mongoUrl = process.env.MONGOLAB_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
 
 mongoose.connect( mongoUrl, { useMongoClient: true })
@@ -22,16 +22,16 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cors())
 
 app.get('/ping', (req, res) => {
-  res.send('Api is working')
+  res.send('pong')
 })
 app.use( '/', authRoutes )
 app.all( '/*', [jwtAuth] )
 app.use( '/', monthRoutes )
 
 // error handling
-app.use(function(err, req, res, next) {
-  err.stack && console.log(err.stack)
-  res.status(err.status || 500).send({message: err.message})
+app.use(function(error, request, response, next) {
+  error.stack && console.error(error.stack)
+  response.status(error.status || 500).send({message: error.message || 'unhandled'})
 })
 
 

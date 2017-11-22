@@ -1,7 +1,7 @@
 import {MonthModel} from '../models/monthModel'
 import {UserModel} from '../models/userModel'
 import * as express from 'express'
-import {MyError} from "../config/errors";
+import {HttpError} from "../config/errors";
 
 const AVAILABILITY = 'availability';
 const SCHEDULE = 'schedule';
@@ -9,18 +9,19 @@ const monthRoutes = express.Router()
 
 
 function getDays(subject: string, request: any, response: any, uid: string): Promise<any> {
-  return MonthModel.findOne({
+  let query = {
     year: request.params.year,
     month: request.params.month
-  })
-  .then((month) => {
-    if (month) {
-      const userDays = month[subject].find(record => record._id === uid)
-      if (userDays) {
-        return response.send(userDays)
-      }
+  }
+  query[subject] = {
+    _id: uid
+  }
+  return MonthModel.findOne()
+  .then((userDays) => {
+    if (userDays) {
+      return response.send(userDays)
     }
-    throw MyError[404]
+    throw HttpError[404]
   })
 }
 
@@ -42,7 +43,7 @@ function getAllAdminDays(subject: string, request: any, response: any): Promise<
     if (month) {
       return response.send(month[subject])
     }
-    throw MyError[404]
+    throw HttpError[404]
   })
 }
 

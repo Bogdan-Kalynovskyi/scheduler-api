@@ -1,4 +1,3 @@
-
 import * as mongoose from "mongoose";
 
 const userDaysSchema = new mongoose.Schema({
@@ -9,29 +8,13 @@ const userDaysSchema = new mongoose.Schema({
 const monthSchema = new mongoose.Schema({
   year: Number,
   month: Number,
+  availability: [userDaysSchema],
   schedule: [userDaysSchema],
-  availability: [userDaysSchema]
 })
 
 monthSchema.index({year: 1, month: 1}, {unique: true});
-
-// monthSchema.statics.getMonth = (request): Promise<any> => {
-//   return this.findOne({
-//     year: request.params.year,
-//     month: request.params.month
-//   })
-//   .then((month) => {
-//     if (!month) {
-//       throw {
-//         code: 404,
-//         message: 'There is no such user'
-//       }
-//     }
-//     else {
-//       return month;
-//     }
-//   })
-// }
+// monthSchema.index({'availability._id': 1}, {unique: true});
+// monthSchema.index({'schedule._id': 1}, {unique: true});
 
 
 export const MonthModel = mongoose.model('Month', monthSchema)

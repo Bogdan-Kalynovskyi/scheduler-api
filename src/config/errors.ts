@@ -1,7 +1,11 @@
-export const MyError = {
+export const HttpError = {
   401: {
     code: 401,
-    message: 'No such user / Access Denied'
+    message: 'Unauthenticated / User unknown'
+  },
+  403: {
+    code: 403,
+    message: 'Access Denied'
   },
   404: {
     status: 404,
