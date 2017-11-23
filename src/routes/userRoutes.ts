@@ -21,12 +21,12 @@ userRoutes.get('/admin/users', (request: any, response: any) => {
 
 userRoutes.post('/admin/users', (request: any, response: any) => {
   UserModel['saveUserToken'](request)
-  .then(() => response.status(200).render())
+  .then(() => response.status(200).send())
 })
 
 userRoutes.delete('/admin/users', (request: any, response: any) => {
   UserModel['deleteUser'](request)
-  .then(() => response.status(200).render())
+  .then(() => response.status(200).send())
 })
 
 
