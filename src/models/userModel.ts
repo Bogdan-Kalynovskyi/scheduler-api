@@ -3,14 +3,15 @@ import {HttpError} from "../config/errors";
 import {ADMIN_EMAILS} from "../config/jwtConfig";
 
 const userSchema = new mongoose.Schema({
-  _id: String,
+  googleId: String,
   name: String,
   email: String,
   protoUrl: String,
   token: String,
-  expires: Number
+  expires: Number,
 })
 
+// userSchema.index({googleId: 1}, {unique: true})
 userSchema.index({email: 1}, {unique: true})
 userSchema.index({token: 1})
 
@@ -35,7 +36,7 @@ userSchema.statics.ifAdmin = (request): Promise<any> => {
     if (user.email in ADMIN_EMAILS) {
       return user
     }
-    throw HttpError[401]
+    throw HttpError[403]
   })
 }
 
@@ -44,20 +45,22 @@ userSchema.statics.getAllUsers = (request): Promise<any> => {
   if (this.ifAdmin(request)) {
     return this.find({email: {'$ne': ADMIN_EMAILS}})
   }
-  throw HttpError[401]
 }
 
 
 userSchema.statics.saveUser = (request): Promise<any> => {
   if (this.ifAdmin(request)) {
     return this.save({
-      _id: request.body.id,
+      googleId: request.body.id,
       email: request.body.email,
       name: request.body.name,
       photoUrl: request.body.photoUrl,
     })
+    .catch(() => {
+      console.log(arguments);
+      throw HttpError[400]('Trying to save the user twice?')
+    })
   }
-  throw HttpError[401]
 }
 
 
@@ -67,8 +70,19 @@ userSchema.statics.deleteUser = (request): Promise<any> => {
     .then(res => console.log(res))
     // todo .catch  404
   }
-  throw HttpError[401]
 }
+
+
+userSchema.statics.stripAuthData = (userWithAuth) => {
+  return {
+    // id: userWithAuth._id,
+    email: userWithAuth.email,
+    name: userWithAuth.name,
+    photoUrl: userWithAuth.photoUrl,
+    expires: userWithAuth.expires,
+  }
+}
+
 
 
 export const UserModel = mongoose.model('User', userSchema)

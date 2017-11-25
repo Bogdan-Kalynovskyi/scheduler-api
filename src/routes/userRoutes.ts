@@ -4,19 +4,11 @@ import {HttpError} from "../config/errors";
 
 const userRoutes = express.Router()
 
-function stripAuthData(userWithAuth) {
-  return {
-    // id: userWithAuth._id,
-    email: userWithAuth.email,
-    name: userWithAuth.name,
-    photoUrl: userWithAuth.photoUrl
-  }
-}
-
 
 // Admin
 userRoutes.get('/admin/users', (request: any, response: any) => {
-  UserModel['getAllUsers'](request).then(users => response.send(users.map(stripAuthData)))
+  UserModel['getAllUsers'](request)
+  .then(users => response.send(users.map(UserModel['stripAuthData'])))
 })
 
 userRoutes.post('/admin/users', (request: any, response: any) => {

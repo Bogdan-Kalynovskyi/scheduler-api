@@ -1,4 +1,10 @@
 export const HttpError = {
+  400: (message = 'Bad Request') => {
+    return {
+      code: 401,
+      message: message
+    }
+  },
   401: {
     code: 401,
     message: 'Unauthenticated / User unknown'
@@ -7,9 +13,11 @@ export const HttpError = {
     code: 403,
     message: 'Access Denied'
   },
-  404: {
-    status: 404,
-    message: 'No such record'
+  404: (message = 'Record not found') => {
+    return {
+      status: 404,
+      message: message
+    }
   },
   500: {
     status: 500,

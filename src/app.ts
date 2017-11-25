@@ -21,11 +21,8 @@ mongoose.connection.on('connected',() => {
 
   UserModel.remove({}).then(() => {
 
-    ADMIN_EMAILS.forEach((email, i) => {
-      const user = new UserModel({
-        email: email,
-        _id: i
-      })
+    ADMIN_EMAILS.forEach((email) => {
+      const user = new UserModel({email})
       user.save()
       console.log(email + ' added as a user')
     })

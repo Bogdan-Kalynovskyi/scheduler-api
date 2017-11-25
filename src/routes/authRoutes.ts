@@ -12,12 +12,13 @@ authRoutes.post('/authenticate', [createToken], (request: any, response: any) =>
   UserModel.findOneAndUpdate({
     email: request.body.email
   }, {
+    googleId: request.body.id,
     token: request.body.token,
     expires: Date.now() + SESSION_EXPIRATION
   })
   .then((user) => {
     if (user) {
-      response.status(200).send()
+      response.status(200).send(UserModel['stripAuthData'](user))
     }
     else {
       throw HttpError[401]
