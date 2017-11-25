@@ -57,6 +57,8 @@ userSchema.statics.saveUser = (request): Promise<any> => {
       photoUrl: request.body.photoUrl,
     })
     .catch(() => {
+      // todo: check if this exception is handled properly
+      debugger;
       console.log(arguments);
       throw HttpError[400]('Trying to save the user twice?')
     })
