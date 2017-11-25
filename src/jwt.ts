@@ -1,12 +1,13 @@
 import * as jwt from 'jwt-simple'
-import {JWT_SECRET, SESSION_EXPIRATION} from "./config/jwtConfig";
+import {jwtSecret, sessionExpirationTime} from "./config/jwtConfig";
+import {HttpError} from "./config/errors";
 
 
 export function createToken(request, response, next) {
-  request.expires = Date.now() + SESSION_EXPIRATION
+  request.expires = Date.now() + sessionExpirationTime
   request.token = jwt.encode({
     exp: request.expires
-  }, JWT_SECRET)
+  }, jwtSecret)
   next()
 }
 
@@ -15,7 +16,7 @@ export function jwtAuth(request, response, next) {
   const token = request.headers['x-access-token']
   if (token) {
     try {
-      const decoded = jwt.decode(token, JWT_SECRET)
+      const decoded = jwt.decode(token, jwtSecret)
       if (decoded.exp < Date.now()) {
         response.sendStatus(498)
       }
@@ -23,14 +24,10 @@ export function jwtAuth(request, response, next) {
         next()
       }
     } catch (err) {
-      return response.json({
-        message: 'token is invalid'
-      })
+      throw HttpError[400]('Token is invalid')
     }
   }
   else {
-    response.json({
-      message: 'there is no token'
-    })
+    throw HttpError[400]('There is no token')
   }
 }

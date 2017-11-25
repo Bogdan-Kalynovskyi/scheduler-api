@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import {HttpError} from "../config/errors";
-import {ADMIN_EMAILS} from "../config/jwtConfig";
+import {adminEmails} from "../config/jwtConfig";
 
 const userSchema = new mongoose.Schema({
   googleId: String,
@@ -33,7 +33,7 @@ userSchema.statics.getLoggedUser = (request): Promise<any> => {
 userSchema.statics.ifAdmin = (request): Promise<any> => {
   return this.getLoggedUser(request)
   .then((user) => {
-    if (user.email in ADMIN_EMAILS) {
+    if (user.email in adminEmails) {
       return user
     }
     throw HttpError[403]
@@ -43,7 +43,7 @@ userSchema.statics.ifAdmin = (request): Promise<any> => {
 
 userSchema.statics.getAllUsers = (request): Promise<any> => {
   if (this.ifAdmin(request)) {
-    return this.find({email: {'$ne': ADMIN_EMAILS}})
+    return this.find({email: {'$ne': adminEmails}})
   }
 }
 
@@ -75,7 +75,7 @@ userSchema.statics.deleteUser = (request): Promise<any> => {
 
 userSchema.statics.stripAuthData = (userWithAuth) => {
   return {
-    // id: userWithAuth._id,
+    googleId: userWithAuth.googleId,
     email: userWithAuth.email,
     name: userWithAuth.name,
     photoUrl: userWithAuth.photoUrl,

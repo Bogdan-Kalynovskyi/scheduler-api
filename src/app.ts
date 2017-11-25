@@ -8,7 +8,7 @@ import {jwtAuth} from "./jwt"
 import {authRoutes} from "./routes/authRoutes"
 import {userRoutes} from "./routes/userRoutes"
 import {monthRoutes} from "./routes/monthRoutes"
-import {ADMIN_EMAILS} from "./config/jwtConfig";
+import {adminEmails} from "./config/jwtConfig";
 import {UserModel} from './models/userModel'
 
 const port = process.env.PORT || 3333
@@ -21,7 +21,7 @@ mongoose.connection.on('connected',() => {
 
   UserModel.remove({}).then(() => {
 
-    ADMIN_EMAILS.forEach((email) => {
+    adminEmails.forEach((email) => {
       const user = new UserModel({email})
       user.save()
       console.log(email + ' added as a user')
