@@ -64,7 +64,8 @@ userSchema.statics.saveUser = (request): Promise<any> => {
 userSchema.statics.deleteUser = (request): Promise<any> => {
   if (this.ifAdmin(request)) {
     return this.delete({_id: request.body.uid})
-    //.catch  404
+    .then(res => console.log(res))
+    // todo .catch  404
   }
   throw HttpError[401]
 }

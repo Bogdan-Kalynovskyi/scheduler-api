@@ -20,7 +20,7 @@ userRoutes.get('/admin/users', (request: any, response: any) => {
 })
 
 userRoutes.post('/admin/users', (request: any, response: any) => {
-  UserModel['saveUserToken'](request)
+  UserModel['saveUser'](request)
   .then(() => response.status(200).send())
 })
 
