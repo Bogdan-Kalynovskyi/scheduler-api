@@ -6,7 +6,8 @@ import {HttpError} from "./config/errors";
 export function createToken(request, response, next) {
   request.expires = Date.now() + sessionExpirationTime
   request.token = jwt.encode({
-    exp: request.expires
+    exp: request.expires,
+    id: request.body.id
   }, jwtSecret)
   next()
 }

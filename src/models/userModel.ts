@@ -84,5 +84,4 @@ userSchema.statics.stripAuthData = (userWithAuth) => {
 }
 
 
-
 export const UserModel = mongoose.model('User', userSchema)

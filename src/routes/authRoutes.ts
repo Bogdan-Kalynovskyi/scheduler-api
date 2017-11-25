@@ -13,7 +13,7 @@ authRoutes.post('/authenticate', [createToken], (request: any, response: any) =>
     email: request.body.email
   }, {
     googleId: request.body.id,
-    token: request.body.token,
+    token: request.token,
     expires: Date.now() + sessionExpirationTime
   })
   .then((user) => {
