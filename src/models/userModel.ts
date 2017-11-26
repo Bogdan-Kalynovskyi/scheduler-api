@@ -1,19 +1,17 @@
 import * as mongoose from "mongoose";
 import {HttpError} from "../config/errors";
-import {adminEmails} from "../config/jwtConfig";
+import {adminEmails} from "../config/config";
 
 const userSchema = new mongoose.Schema({
   googleId: String,
   name: String,
   email: String,
   protoUrl: String,
-  token: String,
   expires: Number,
 })
 
-// userSchema.index({googleId: 1}, {unique: true})
+userSchema.index({googleId: 1}, {unique: true})
 userSchema.index({email: 1}, {unique: true})
-userSchema.index({token: 1})
 
 
 userSchema.statics.getLoggedUser = (request): Promise<any> => {
@@ -57,7 +55,6 @@ userSchema.statics.saveUser = (request): Promise<any> => {
       photoUrl: request.body.photoUrl,
     })
     .catch(() => {
-      // todo: check if this exception is handled properly
       debugger;
       console.log(arguments);
       throw HttpError[400]('Trying to save the user twice?')

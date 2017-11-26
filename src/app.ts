@@ -8,7 +8,7 @@ import {jwtAuth} from "./jwt"
 import {authRoutes} from "./routes/authRoutes"
 import {userRoutes} from "./routes/userRoutes"
 import {monthRoutes} from "./routes/monthRoutes"
-import {adminEmails} from "./config/jwtConfig";
+import {adminEmails} from "./config/config";
 import {UserModel} from './models/userModel'
 
 const port = process.env.PORT || 3333
