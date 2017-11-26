@@ -1,5 +1,6 @@
 import {googleClientId} from "../config/config"
 import * as express from 'express'
+import crypto = require('crypto')
 import GoogleAuth = require('google-auth-library')
 
 import {UserModel} from '../models/userModel'
@@ -54,11 +55,13 @@ authRoutes.post('/authenticate', (request: any, response: any) => {
       }, userUpdate)
       .then((changed) => {
         if (changed) {
-          const token = request.csrfToken()
-          const expires = Date.now() + sessionExpirationTime
-          request.session.token = token
-          request.session.expires = expires
-          response.status(200).send({token, expires})
+          crypto.randomBytes(48, function(err, buffer) {
+            const token = buffer.toString('base64')
+            const expires = Date.now() + sessionExpirationTime
+            request.session.token = token
+            request.session.expires = expires
+            response.status(200).send({token, expires})
+          })
         }
         else {
           throw HttpError[401]
@@ -68,7 +71,7 @@ authRoutes.post('/authenticate', (request: any, response: any) => {
 })
 
 
-authRoutes.delete('/authenticate', (request: any, response: any) => {
+authRoutes.delete('/authenticate', sessionAuth, (request: any, response: any) => {
   request.session.destroy((err) => {
     if (err) {
       throw HttpError[500](err.message)

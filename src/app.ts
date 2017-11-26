@@ -3,7 +3,6 @@ import * as session from 'express-session'
 import * as http from 'http'
 import * as bodyParser from "body-parser"
 import * as cors from "cors"
-import csurf = require('csurf')
 import errorhandler = require("errorhandler")
 import morgan = require("morgan")
 import mongoose = require('mongoose')
@@ -56,7 +55,7 @@ app.get('/ping', (req, res) => {
   res.send('pong')
 })
 app.use( '/', authRoutes )
-app.use(csurf())
+app.all( '/*', [sessionAuth] )
 app.use( '/', userRoutes )
 app.use( '/', monthRoutes )
 
