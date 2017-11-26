@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   expires: Number,
 })
 
-userSchema.index({googleId: 1}, {unique: true})
+userSchema.index({googleId: 1})
 userSchema.index({email: 1}, {unique: true})
 
 
