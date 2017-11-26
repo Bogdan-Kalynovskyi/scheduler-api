@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
   name: String,
   email: String,
   protoUrl: String,
-  expires: Number,
 })
 
 userSchema.index({googleId: 1})

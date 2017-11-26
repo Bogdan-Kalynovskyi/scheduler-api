@@ -18,10 +18,10 @@ tokenSchema.statics.verifyUser = (googleId, idToken, callback) => {
   googleClient.verifyIdToken(idToken, googleClientId,
   (err, login) => {
     if (err) {
-      throw HttpError[500];
+      throw HttpError[500]('token verification failed');
     }
     const user = login.getPayload();
-    if (googleId === user.sub) {
+    if (googleId === user.sub && googleClientId === user.aud) {
       callback(user)
     }
     else {

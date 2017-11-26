@@ -19,8 +19,10 @@ export const HttpError = {
       message: message
     }
   },
-  500: {
-    status: 500,
-    message: 'Database problem'
+  500: (message = 'Database problem') => {
+    return {
+      status: 500,
+      message: message
+    }
   }
 }
