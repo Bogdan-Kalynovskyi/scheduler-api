@@ -1,6 +1,6 @@
-import * as mongoose from "mongoose";
-import {HttpError} from "../config/errors";
-import {adminEmails} from "../config/config";
+import * as mongoose from "mongoose"
+import {HttpError} from "../config/errors"
+import {adminEmails} from "../config/config"
 
 const userSchema = new mongoose.Schema({
   googleId: String,

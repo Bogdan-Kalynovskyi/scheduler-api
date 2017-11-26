@@ -1,13 +1,13 @@
-import {UserModel} from '../models/userModel';
-import * as express from 'express';
-const crypto = require('crypto')
+import {googleClientId} from "../config/config"
+import * as express from 'express'
+import GoogleAuth = require('google-auth-library')
 
-import {HttpError} from "../config/errors";
-import {AuthModel} from "../models/authModel";
-import {sessionExpirationTime} from "../config/config";
+import {UserModel} from '../models/userModel'
+import {HttpError} from "../config/errors"
+import {sessionExpirationTime} from "../config/config"
 
 
-export const sessionAuth = function (request, response, next) {
+export function sessionAuth(request, response, next) {
   if (
       request.session.expires < Date.now() &&
       request.session.token === request.headers['x-access-token']
@@ -17,11 +17,31 @@ export const sessionAuth = function (request, response, next) {
   throw HttpError[401]
 }
 
-export const authRoutes = express.Router();
+
+const googleAuth = new GoogleAuth
+const googleClient = new googleAuth.OAuth2(googleClientId, '', '')
+
+
+function verifyUser (googleId, idToken, callback) {
+  googleClient.verifyIdToken(idToken, googleClientId, (err, login) => {
+      if (err) {
+        throw HttpError[500]('token verification failed')
+      }
+      const user = login.getPayload()
+      if (googleId === user.sub && googleClientId === user.aud) {
+        return callback(user)
+      }
+
+      throw HttpError[401]
+    })
+}
+
+
+export const authRoutes = express.Router()
 
 
 authRoutes.post('/authenticate', (request: any, response: any) => {
-  AuthModel['verifyUser'](request.body.googleId, request.body.idToken,
+  verifyUser(request.body.googleId, request.body.idToken,
     (user) => {
       const userUpdate = {
         googleId: user.id,
@@ -34,16 +54,11 @@ authRoutes.post('/authenticate', (request: any, response: any) => {
       }, userUpdate)
       .then((changed) => {
         if (changed) {
-          crypto.randomBytes(48, function(err, buffer) {
-            if (err) {
-              throw HttpError[500](err.message)
-            }
-            const token = buffer.toString('base64')
-            const expires = Date.now() + sessionExpirationTime
-            request.session.token = token
-            request.session.expires = expires
-            response.status(200).send({token, expires})
-          });
+          const token = request.csrfToken()
+          const expires = Date.now() + sessionExpirationTime
+          request.session.token = token
+          request.session.expires = expires
+          response.status(200).send({token, expires})
         }
         else {
           throw HttpError[401]

@@ -1,11 +1,14 @@
 import * as express from 'express'
 import * as session from 'express-session'
 import * as http from 'http'
-import mongoose = require('mongoose')
-mongoose.Promise = Promise
 import * as bodyParser from "body-parser"
 import * as cors from "cors"
-import morgan = require("morgan");
+import csurf = require('csurf')
+import errorhandler = require("errorhandler")
+import morgan = require("morgan")
+import mongoose = require('mongoose')
+mongoose.Promise = Promise
+const MongoStore = require('connect-mongo')(session)
 
 import {authRoutes, sessionAuth} from "./routes/authRoutes"
 import {userRoutes} from "./routes/userRoutes"
@@ -36,27 +39,32 @@ const app = express()
 const server = http.createServer(app)
 
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }))
+// app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cors())
 app.use(session({
   secret: sessionSecret,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
 }))
 app.use(morgan(':method :url :status'))
+if (process.env.NODE_ENV === 'development') {
+  app.use(errorhandler())
+}
 
 app.get('/ping', (req, res) => {
   res.send('pong')
 })
 app.use( '/', authRoutes )
-app.all( '/*', [sessionAuth] )
+app.use(csurf())
 app.use( '/', userRoutes )
 app.use( '/', monthRoutes )
 
 // error handling
 app.use(function(error, request, response, next) {
-  if (error.stack) {
+  if (error.stack && process.env.NODE_ENV === 'development') {
     console.error(error.stack)
+    // todo wish this was more verbose
   }
   response.status(error.status || 500).send(error.message || 'unhandled')
   next(error)

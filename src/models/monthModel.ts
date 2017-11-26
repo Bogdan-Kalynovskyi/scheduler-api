@@ -1,4 +1,4 @@
-import * as mongoose from "mongoose";
+import * as mongoose from "mongoose"
 
 const userDaysSchema = new mongoose.Schema({
   _id: String,    // is uid
