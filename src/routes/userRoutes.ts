@@ -16,7 +16,7 @@ userRoutes.post('/admin/users', (request: any, response: any) => {
   .then(() => response.status(204).send())
 })
 
-userRoutes.delete('/admin/users', (request: any, response: any) => {
+userRoutes.delete('/admin/users/:googleId', (request: any, response: any) => {
   UserModel['deleteUser'](request)
   .then(() => response.status(204).send())
 })

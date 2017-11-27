@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   protoUrl: String,
 })
 
-userSchema.index({googleId: 1})
+userSchema.index({googleId: 1}, {unique: true})
 userSchema.index({email: 1}, {unique: true})
 
 
@@ -48,9 +48,13 @@ userSchema.statics.saveUser = (request): Promise<any> => {
 
 userSchema.statics.deleteUser = (request): Promise<any> => {
   if (request.session.isAdmin) {
-    return this.delete( {googleId: request.body.googleId} )
-    .then(res => console.log(res))
-    // todo .catch  404
+    return this.remove( {googleId: request.params.googleId} )
+    .then(res => {
+      console.log(res)
+      if (res.result.n === 0) {  // fuck mongoose
+        throw HttpError[404]
+      }
+    })
   }
   throw HttpError[403]
 }
