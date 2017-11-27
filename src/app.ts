@@ -3,6 +3,7 @@ import * as session from 'express-session'
 import * as http from 'http'
 import * as bodyParser from "body-parser"
 import * as cors from "cors"
+import csurf = require('csurf')
 import errorhandler = require("errorhandler")
 import morgan = require("morgan")
 import mongoose = require('mongoose')
@@ -47,21 +48,21 @@ app.use(session({
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }))
 app.use(morgan(':method :url :status'))
-if (process.env.NODE_ENV === 'development') {
+// if (process.env.NODE_ENV === 'development') {
   app.use(errorhandler())
-}
+// }
 
 app.get('/ping', (req, res) => {
   res.send('pong')
 })
 app.use( '/', authRoutes )
-app.all( '/*', [sessionAuth] )
+app.use(csurf())
 app.use( '/', userRoutes )
 app.use( '/', monthRoutes )
 
 // error handling
 app.use(function(error, request, response, next) {
-  if (error.stack && process.env.NODE_ENV === 'development') {
+  if (error.stack/* && process.env.NODE_ENV === 'development'*/) {
     console.error(error.stack)
     // todo wish this was more verbose
   }

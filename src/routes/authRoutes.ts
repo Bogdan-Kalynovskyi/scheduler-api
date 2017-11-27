@@ -1,22 +1,10 @@
 import {googleClientId} from "../config/config"
 import * as express from 'express'
-import crypto = require('crypto')
+import csurf = require('csurf')
 import GoogleAuth = require('google-auth-library')
 
 import {UserModel} from '../models/userModel'
 import {HttpError} from "../config/errors"
-import {sessionExpirationTime} from "../config/config"
-
-
-export function sessionAuth(request, response, next) {
-  if (
-      request.session.expires < Date.now() &&
-      request.session.token === request.headers['x-access-token']
-  ) {
-    return next()
-  }
-  throw HttpError[401]
-}
 
 
 const googleAuth = new GoogleAuth
@@ -55,13 +43,8 @@ authRoutes.post('/authenticate', (request: any, response: any) => {
       }, userUpdate)
       .then((changed) => {
         if (changed) {
-          crypto.randomBytes(48, function(err, buffer) {
-            const token = buffer.toString('base64')
-            const expires = Date.now() + sessionExpirationTime
-            request.session.token = token
-            request.session.expires = expires
-            response.status(200).send({token, expires})
-          })
+          const token = request.session.csrfSecret
+          response.status(200).send({token})
         }
         else {
           throw HttpError[401]
@@ -71,14 +54,12 @@ authRoutes.post('/authenticate', (request: any, response: any) => {
 })
 
 
-authRoutes.delete('/authenticate', sessionAuth, (request: any, response: any) => {
+authRoutes.delete('/authenticate', csurf(), (request: any, response: any) => {
   request.session.destroy((err) => {
     if (err) {
       throw HttpError[500](err.message)
     }
-    else {
-      response.status(200).send()
-    }
+    response.status(200).send()
   })
 })
 
