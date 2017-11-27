@@ -10,7 +10,7 @@ import mongoose = require('mongoose')
 mongoose.Promise = Promise
 const MongoStore = require('connect-mongo')(session)
 
-import {authRoutes, sessionAuth} from "./routes/authRoutes"
+import {authRoutes} from "./routes/authRoutes"
 import {userRoutes} from "./routes/userRoutes"
 import {monthRoutes} from "./routes/monthRoutes"
 import {adminEmails, sessionSecret} from "./config/config";
@@ -56,8 +56,8 @@ app.use(morgan(':method :url :status :res[content-length]'))
 app.get('/ping', (req, res) => {
   res.send('pong')
 })
-app.use(csurf({ignoreMethods: ['HEAD', 'OPTIONS']}))
 app.use( '/', authRoutes )
+app.use(csurf({ignoreMethods: ['HEAD', 'OPTIONS']}))
 app.use( '/', userRoutes )
 app.use( '/', monthRoutes )
 

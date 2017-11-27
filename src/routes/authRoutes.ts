@@ -4,7 +4,7 @@ import csurf = require('csurf')
 import GoogleAuth = require('google-auth-library')
 
 import {UserModel} from '../models/userModel'
-import {HttpError} from "../config/errors"
+import {HttpError} from '../config/errors'
 
 
 const googleAuth = new GoogleAuth
@@ -34,7 +34,7 @@ function verifyUser (googleId, idToken, callback) {
 export const authRoutes = express.Router()
 
 
-authRoutes.get('/authenticate', (request: any, response: any) => {
+authRoutes.get('/authenticate', csurf(), (request: any, response: any) => {
   // this is a keep-alive request to not loose the session
   response.status(204).send()
 })
@@ -61,7 +61,7 @@ authRoutes.post('/authenticate', csurf({ignoreMethods: ['POST'] }), (request: an
 })
 
 
-authRoutes.delete('/authenticate', (request: any, response: any) => {
+authRoutes.delete('/authenticate', csurf(), (request: any, response: any) => {
   request.session.destroy((err) => {
     if (err) {
       throw HttpError[500](err.message)
