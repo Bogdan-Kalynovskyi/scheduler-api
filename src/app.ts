@@ -42,12 +42,13 @@ app.use(bodyParser.json())
 // app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cors())
 app.use(session({
+  // ttl:
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }))
-app.use(morgan(':method :url :status'))
+app.use(morgan(':method :url :status :res[content-length]'))
 // if (process.env.NODE_ENV === 'development') {
   app.use(errorhandler())
 // }
@@ -55,8 +56,8 @@ app.use(morgan(':method :url :status'))
 app.get('/ping', (req, res) => {
   res.send('pong')
 })
-app.use( '/', authRoutes )
 app.use(csurf({ignoreMethods: ['HEAD', 'OPTIONS']}))
+app.use( '/', authRoutes )
 app.use( '/', userRoutes )
 app.use( '/', monthRoutes )
 

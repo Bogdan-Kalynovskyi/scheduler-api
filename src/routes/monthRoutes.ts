@@ -50,7 +50,6 @@ function getAllAdminDays(subject: string, request: any, response: any): Promise<
 
 function updateDays (subject: string, request: any, uid: string): Promise<any> {
   console.log(request.body.days);
-  // request.body.days = JSON.parse(request.body.days)
 
   return MonthModel.findOne({
     year: request.params.year,

@@ -34,6 +34,12 @@ function verifyUser (googleId, idToken, callback) {
 export const authRoutes = express.Router()
 
 
+authRoutes.get('/authenticate', (request: any, response: any) => {
+  // this is a keep-alive request to not loose the session
+  response.status(204).send()
+})
+
+
 authRoutes.post('/authenticate', csurf({ignoreMethods: ['POST'] }), (request: any, response: any) => {
   verifyUser(request.body.googleId, request.body.idToken,
     (user) => {
@@ -45,7 +51,7 @@ authRoutes.post('/authenticate', csurf({ignoreMethods: ['POST'] }), (request: an
           request.session.user = user
           request.session.isAdmin = user.email in adminEmails
           const token = request.csrfToken()
-          response.send({token})
+          response.status(201).send({token})
         }
         else {
           throw HttpError[401]
@@ -55,12 +61,12 @@ authRoutes.post('/authenticate', csurf({ignoreMethods: ['POST'] }), (request: an
 })
 
 
-authRoutes.delete('/authenticate', csurf(), (request: any, response: any) => {
+authRoutes.delete('/authenticate', (request: any, response: any) => {
   request.session.destroy((err) => {
     if (err) {
       throw HttpError[500](err.message)
     }
-    response.send()
+    response.status(204).send()
   })
 })
 

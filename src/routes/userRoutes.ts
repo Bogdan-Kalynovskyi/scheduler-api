@@ -13,12 +13,12 @@ userRoutes.get('/admin/users', (request: any, response: any) => {
 
 userRoutes.post('/admin/users', (request: any, response: any) => {
   UserModel['saveUser'](request)
-  .then(() => response.send())
+  .then(() => response.status(204).send())
 })
 
 userRoutes.delete('/admin/users', (request: any, response: any) => {
   UserModel['deleteUser'](request)
-  .then(() => response.send())
+  .then(() => response.status(204).send())
 })
 
 
