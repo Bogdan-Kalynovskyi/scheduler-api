@@ -56,7 +56,7 @@ app.get('/ping', (req, res) => {
   res.send('pong')
 })
 app.use( '/', authRoutes )
-app.use(csurf())
+app.use(csurf({ignoreMethods: ['HEAD', 'OPTIONS']}))
 app.use( '/', userRoutes )
 app.use( '/', monthRoutes )
 

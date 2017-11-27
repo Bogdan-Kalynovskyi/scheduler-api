@@ -8,17 +8,17 @@ const userRoutes = express.Router()
 // Admin
 userRoutes.get('/admin/users', (request: any, response: any) => {
   UserModel['getAllUsers'](request)
-  .then(users => response.send(users.map(UserModel['stripAuthData'])))
+  .then(users => response.send(users))
 })
 
 userRoutes.post('/admin/users', (request: any, response: any) => {
   UserModel['saveUser'](request)
-  .then(() => response.status(200).send())
+  .then(() => response.send())
 })
 
 userRoutes.delete('/admin/users', (request: any, response: any) => {
   UserModel['deleteUser'](request)
-  .then(() => response.status(200).send())
+  .then(() => response.send())
 })
 
 

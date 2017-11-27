@@ -13,72 +13,46 @@ userSchema.index({googleId: 1})
 userSchema.index({email: 1}, {unique: true})
 
 
-userSchema.statics.getLoggedUser = (request): Promise<any> => {
-  return this.findOne({
-    token: request.get('x-access-token')
-  })
-  .then((user) => {
-    if (user) {
-      return user
-    }
-    throw HttpError[401]
-  })
-}
-
-
-// Admin
-userSchema.statics.ifAdmin = (request): Promise<any> => {
-  return this.getLoggedUser(request)
-  .then((user) => {
-    if (user.email in adminEmails) {
-      return user
-    }
-    throw HttpError[403]
-  })
+userSchema.statics.getLoggedUser = (request) => {
+  if (request.session) {
+    return request.session.user
+  }
+  throw HttpError[401]
 }
 
 
 userSchema.statics.getAllUsers = (request): Promise<any> => {
-  if (this.ifAdmin(request)) {
+  if (request.session.isAdmin) {
     return this.find({email: {'$ne': adminEmails}})
   }
+  throw HttpError[403]
 }
 
 
 userSchema.statics.saveUser = (request): Promise<any> => {
-  if (this.ifAdmin(request)) {
+  if (request.session.isAdmin) {
     return this.save({
-      googleId: request.body.id,
+      googleId: request.body.googleId,
       email: request.body.email,
       name: request.body.name,
       photoUrl: request.body.photoUrl,
     })
     .catch(() => {
-      debugger;
       console.log(arguments);
       throw HttpError[400]('Trying to save the user twice?')
     })
   }
+  throw HttpError[403]
 }
 
 
 userSchema.statics.deleteUser = (request): Promise<any> => {
-  if (this.ifAdmin(request)) {
-    return this.delete({_id: request.body.uid})
+  if (request.session.isAdmin) {
+    return this.delete( {googleId: request.body.googleId} )
     .then(res => console.log(res))
     // todo .catch  404
   }
-}
-
-
-userSchema.statics.stripAuthData = (userWithAuth) => {
-  return {
-    googleId: userWithAuth.googleId,
-    email: userWithAuth.email,
-    name: userWithAuth.name,
-    photoUrl: userWithAuth.photoUrl,
-    expires: userWithAuth.expires,
-  }
+  throw HttpError[403]
 }
 
 
