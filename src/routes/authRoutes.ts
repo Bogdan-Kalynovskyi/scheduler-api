@@ -49,9 +49,10 @@ authRoutes.post('/authenticate', csurf({ignoreMethods: ['POST'] }), (request: an
       .then((changed) => {
         if (changed) {
           request.session.user = user
-          request.session.isAdmin = user.email in adminEmails
+          const isAdmin = user.email in adminEmails
+          request.session.isAdmin = isAdmin
           const token = request.csrfToken()
-          response.status(201).send({token})
+          response.status(201).send({token, isAdmin})
         }
         else {
           throw HttpError[401]
