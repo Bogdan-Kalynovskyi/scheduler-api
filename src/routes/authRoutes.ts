@@ -3,7 +3,7 @@ import * as express from 'express'
 import csurf = require('csurf')
 import GoogleAuth = require('google-auth-library')
 
-import {UserModel} from '../models/userModel'
+import {UserDb} from '../models/userModel'
 import {HttpError} from '../config/errors'
 
 
@@ -43,7 +43,7 @@ authRoutes.get('/authenticate', csurf(), (request: any, response: any) => {
 authRoutes.post('/authenticate', csurf({ignoreMethods: ['POST'] }), (request: any, response: any) => {
   verifyUser(request.body.googleId, request.body.idToken,
     (user) => {
-      UserModel.findOneAndUpdate({
+      UserDb.findOneAndUpdate({
         email: user.email
       }, user)
       .then((changed) => {

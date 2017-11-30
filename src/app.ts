@@ -14,7 +14,7 @@ import {authRoutes} from "./routes/authRoutes"
 import {userRoutes} from "./routes/userRoutes"
 import {monthRoutes} from "./routes/monthRoutes"
 import {adminEmails, sessionSecret} from "./config/config";
-import {UserModel} from './models/userModel'
+import {UserDb} from './models/userModel'
 
 const port = process.env.PORT || 3333
 const mongoUrl = process.env.MONGOLAB_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
@@ -25,9 +25,9 @@ mongoose.connection.on('error',(err) => console.log('Error when connecting to mo
 mongoose.connection.on('connected',() => {
   console.log('Connected to mongodb :)')
 
-  UserModel.remove({}).then(() => {
+  UserDb.remove({}).then(() => {
     adminEmails.forEach((email) => {
-      const user = new UserModel({email})
+      const user = new UserDb({email})
       user.save()
       console.log(email + ' added as a user')
     })
