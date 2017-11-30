@@ -10,11 +10,12 @@ import mongoose = require('mongoose')
 mongoose.Promise = Promise
 const MongoStore = require('connect-mongo')(session)
 
-import {authRoutes} from "./routes/authRoutes"
-import {userRoutes} from "./routes/userRoutes"
-import {monthRoutes} from "./routes/monthRoutes"
+import {authRoutes} from "./routes/auth.routes"
+import {userRoutes} from "./routes/user.routes"
+import {monthRoutes} from "./routes/month.routes"
 import {adminEmails, sessionSecret} from "./config/config";
-import {UserDb} from './models/userModel'
+import {UserDb} from './models/user.model'
+import {Auth} from "./models/auth.model";
 
 const port = process.env.PORT || 3333
 const mongoUrl = process.env.MONGOLAB_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
@@ -58,8 +59,9 @@ app.get('/ping', (req, res) => {
 })
 app.use( '/', authRoutes )
 app.use(csurf({ignoreMethods: ['HEAD', 'OPTIONS']}))
-app.use( '/', userRoutes )
 app.use( '/', monthRoutes )
+app.use([Auth.isAdmin])
+app.use( '/', userRoutes )
 
 // error handling
 app.use(function(error, request, response, next) {

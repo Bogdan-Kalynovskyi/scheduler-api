@@ -27,6 +27,7 @@ export class UserModel {
   static getAllUsers(request): Promise<any> {
     if (request.session.isAdmin) {
       return UserDb.find({email: {'$ne': adminEmails}})
+      .then((res: any) => res as User[])
     }
     throw HttpError[403]
   }
@@ -52,7 +53,7 @@ export class UserModel {
   static deleteUser(request): Promise<any> {
     if (request.session.isAdmin) {
       return UserDb.remove({googleId: request.params.googleId})
-      .then(res => {
+      .then((res: any) => {
         console.log(res)
         if (res.result.n === 0) {  // fuck mongoose
           throw HttpError[404]
