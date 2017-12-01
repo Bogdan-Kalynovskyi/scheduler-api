@@ -1,5 +1,4 @@
 import * as mongoose from "mongoose"
-import {UserDb, UserModel} from "./userModel";
 import {HttpError} from "../config/errors";
 import {Auth} from "./auth.model";
 

@@ -1,7 +1,6 @@
 import * as mongoose from "mongoose"
 import {HttpError} from "../config/errors"
 import {adminEmails} from "../config/config"
-import {static} from "express";
 
 const userSchema = new mongoose.Schema({
   googleId: String,
@@ -35,7 +34,7 @@ export class UserModel {
 
   static saveUser(request): Promise<any> {
     if (request.session.isAdmin) {
-      return UserDb.save({
+      return UserDb.create({
         googleId: request.body.googleId,
         email: request.body.email,
         name: request.body.name,
