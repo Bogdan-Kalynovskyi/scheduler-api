@@ -15,34 +15,38 @@ authRoutes.get('/authenticate', csurf(), (request: any, response: any) => {
 })
 
 
-authRoutes.post('/authenticate', csurf({ignoreMethods: ['POST'] }), (request: any, response: any) => {
+authRoutes.post('/authenticate', csurf({ignoreMethods: ['POST'] }), (request: any, response: any, next) => {
   Auth.verifyUser(request.body.googleId, request.body.idToken,
-    (user) => {
-      UserDb.findOneAndUpdate({
-        email: user.email
-      }, user)
-      .then((changed) => {
-        if (changed) {
-          request.session.user = user
-          const isAdmin = user.email in adminEmails
-          request.session.isAdmin = isAdmin
-          const token = request.csrfToken()
-          response.status(201).send({token, isAdmin})
-        }
-        else {
-          throw HttpError[401]
-        }
-      })
+  (err, user) => {
+    if (err) {
+      return next(err)
+    }
+  
+    UserDb.findOneAndUpdate({
+      email: user.email
+    }, user)
+    .then((changed) => {
+      if (changed) {
+        request.session.user = user
+        const isAdmin = (adminEmails.indexOf(user.email) !== 1)
+        request.session.isAdmin = isAdmin
+        const token = request.csrfToken()
+        response.status(201).send({token, isAdmin})
+      }
+      else {
+        return next(HttpError[401])
+      }
+    })
+    .catch(next)
   })
 })
 
 
-authRoutes.delete('/authenticate', csurf(), (request: any, response: any) => {
+authRoutes.delete('/authenticate', csurf(), (request: any, response: any, next) => {
   request.session.destroy((err) => {
     if (err) {
-      throw HttpError[500](err.message)
+      return next(err)
     }
     response.status(204).send()
   })
 })
-

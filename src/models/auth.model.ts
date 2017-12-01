@@ -22,7 +22,7 @@ export class Auth {
       const isAdmin = request.session.isAdmin
       if (next) {
         if (isAdmin) {
-          next()
+          return next()
         }
         else {
           throw HttpError[403]
@@ -37,11 +37,11 @@ export class Auth {
   static verifyUser (googleId, idToken, callback) {
     googleClient.verifyIdToken(idToken, googleClientId, (err, login) => {
       if (err) {
-        throw HttpError[500]('unexpected error in during Google token token verification')
+        return callback(err)
       }
       const user = login.getPayload()
       if (googleId === user.sub && googleClientId === user.aud && user.email_verified) {
-        return callback({
+        return callback(null, {
           googleId: user.sub,
           email: user.email,
           name: user.name,
@@ -49,7 +49,7 @@ export class Auth {
         })
       }
 
-      throw HttpError[401]
+      callback(HttpError[401])
     })
   }
 

@@ -27,8 +27,11 @@ mongoose.connection.on('connected',() => {
   console.log('Connected to mongodb :)')
 
   UserDb.remove({}).then(() => {
-    adminEmails.forEach((email) => {
-      const user = new UserDb({email})
+    adminEmails.forEach((email, i) => {
+      const user = new UserDb({
+        email: email,
+        googleId: i
+      })
       user.save()
       console.log(email + ' added as a user')
     })
@@ -49,9 +52,9 @@ app.use(session({
   saveUninitialized: false,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }))
-app.use(morgan(':method :url :status :res[content-length]'))
+app.use(morgan(':method :url :status'))
 // if (process.env.NODE_ENV === 'development') {
-  app.use(errorhandler())
+  app.use(errorhandler()) // this guy sucks
 // }
 
 app.get('/ping', (req, res) => {
@@ -64,14 +67,22 @@ app.use([Auth.isAdmin])
 app.use( '/', userRoutes )
 
 // error handling
+let expressNext;
 app.use(function(error, request, response, next) {
-  if (error.stack/* && process.env.NODE_ENV === 'development'*/) {
-    console.error(error.stack)
-    // todo wish this was more verbose
-  }
-  response.status(error.status || 500).send(error.message || 'unhandled')
-  next(error)
+  expressNext = next
+  console.error(error)
+  
+  response.status(error.status || 500).send(error.message || JSON.stringify(error))
 })
+
+
+process.on('unhandledRejection', function(error, p) {
+  expressNext(error)
+});
+
+process.on('unhandledException', function(error, p) {
+  expressNext(error)
+});
 
 
 server.listen(port, () => {

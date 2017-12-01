@@ -26,12 +26,12 @@ export class MonthModel {
     query[subject] = {
       _id: googleId
     }
-    return MonthDb.findOne()
+    return MonthDb.findOne(query)
     .then((userDays) => {
       if (userDays) {
         return userDays
       }
-      throw HttpError[404]
+      throw HttpError[404](`No ${subject} for this month`)
     })
   }
 
@@ -47,7 +47,7 @@ export class MonthModel {
       if (monthObj) {
         return monthObj[subject]
       }
-      throw HttpError[404]
+      throw HttpError[404](`No ${subject} for this month`)
     })
   }
 

@@ -55,7 +55,7 @@ export class UserModel {
       .then((res: any) => {
         console.log(res)
         if (res.result.n === 0) {  // fuck mongoose
-          throw HttpError[404]
+          throw HttpError[404]('No user')
         }
       })
     }
